@@ -1,7 +1,7 @@
-package entity
+package request
 
 type User struct {
-	Email    string `json:"email" db:"email"`
-	Nickname string `json:"nickname" db:"nickname"`
-	Password string `json:"password" db:"password"`
+	Email    string `json:"email" db:"email" validate:"required,email"`
+	Nickname string `json:"nickname" db:"nickname" validate:"required,min=3,max=50"`
+	Password string `json:"password" db:"password" validate:"required,min=6"`
 }

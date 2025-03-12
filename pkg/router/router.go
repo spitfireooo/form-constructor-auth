@@ -8,7 +8,7 @@ import (
 func Router(r *fiber.App) {
 	auth := r.Group("/auth")
 	{
-		auth.Post("/", controllers.SignUp)
-		auth.Post("/", controllers.SignIn)
+		auth.Post("/sign-up", controllers.SignUp)
+		auth.Post("/sign-in", controllers.SignIn)
 	}
 }

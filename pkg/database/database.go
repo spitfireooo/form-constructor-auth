@@ -17,7 +17,7 @@ type DBConfig struct {
 }
 
 const (
-	UserTable = "users"
+	UsersTable = "users"
 )
 
 var Connect *sqlx.DB
@@ -28,11 +28,17 @@ func DatabaseInit(con DBConfig) error {
 		con.Username, con.Password, con.Database, con.Host, con.Port, con.SSLMode,
 	)
 
-	if db, err := sqlx.Open("postgres", dsn); err != nil {
+	if db, err := sqlx.Connect("postgres", dsn); err != nil {
 		return err
 	} else {
 		Connect = db
-		log.Println("Database connect... Successfully")
-		return nil
+		log.Println("Database connected...")
 	}
+
+	if err := Connect.Ping(); err != nil {
+		log.Println("Database failed to ping")
+		return err
+	}
+
+	return nil
 }
