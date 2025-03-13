@@ -3,15 +3,12 @@ package service
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"github.com/spf13/viper"
 	"github.com/spitfireooo/form-constructor-auth/pkg/database"
 	"github.com/spitfireooo/form-constructor-auth/pkg/model/entity"
 	"github.com/spitfireooo/form-constructor-auth/pkg/model/request"
 	"github.com/spitfireooo/form-constructor-auth/pkg/model/response"
 	"github.com/spitfireooo/form-constructor-auth/pkg/utils"
 	"log"
-	"strconv"
-	"time"
 )
 
 func SignUp(user *request.User) (response.User, error) {
@@ -20,25 +17,24 @@ func SignUp(user *request.User) (response.User, error) {
 		log.Println("Error in generate password of crypt")
 	}
 
-	req := new(response.User)
+	res := new(response.User)
 
 	query := fmt.Sprintf(`
-		INSERT INTO %s (email, nickname, password) 
+		INSERT INTO %s (email, nickname, password, logo) 
 		VALUES ($1, $2, $3) 
-		RETURNING id, email, nickname, create_at, update_at
+		RETURNING id, email, nickname, logo, create_at, update_at
 		`, database.UsersTable,
 	)
 	err = database.Connect.
-		QueryRowx(query, user.Email, user.Nickname, passwordHash).
-		Scan(&req.ID, &req.Email, &req.Nickname, &req.CreateAt, &req.UpdateAt)
+		QueryRowx(query, user.Email, user.Nickname, passwordHash, user.Logo).
+		Scan(&res.ID, &res.Email, &res.Nickname, &res.Logo, &res.CreateAt, &res.UpdateAt)
 
-	return *req, err
+	return *res, err
 }
 
 func SignIn(user *request.UserLogin) (response.UserLogin, error) {
 	userExist := new(entity.User)
 
-	fmt.Println(user)
 	query := fmt.Sprintf(`
 		SELECT * FROM %s WHERE email = $1
 	`, database.UsersTable)
@@ -51,18 +47,20 @@ func SignIn(user *request.UserLogin) (response.UserLogin, error) {
 		return response.UserLogin{}, fiber.NewError(fiber.StatusBadRequest, "Invalid login or password")
 	}
 
-	accessTokenExp, _ := strconv.Atoi(viper.GetString("jwt.access_exp"))
-	accessToken, err := utils.GenerateJWT(int64(userExist.ID), time.Duration(accessTokenExp))
-	if err != nil {
-		log.Println("Error in generate access-token")
-		return response.UserLogin{}, err
-	}
-
-	refreshTokenExp, _ := strconv.Atoi(viper.GetString("jwt.refresh_exp"))
-	refreshToken, err := utils.GenerateJWT(int64(userExist.ID), time.Duration(refreshTokenExp))
+	tokens, err := utils.GenerateTokens(int64(userExist.ID))
 	if err != nil {
 		log.Println("Error in generate refresh-token")
 		return response.UserLogin{}, err
+	}
+
+	if _, err := GetToken(int64(userExist.ID)); err != nil {
+		if _, err = CreateToken(int64(userExist.ID), tokens.RefreshToken.Token); err != nil {
+			log.Println("Error in create token", err)
+		}
+	} else {
+		if _, err = UpdateToken(int64(userExist.ID), tokens.RefreshToken.Token); err != nil {
+			log.Println("Error in update token", err)
+		}
 	}
 
 	res := response.UserLogin{
@@ -73,9 +71,20 @@ func SignIn(user *request.UserLogin) (response.UserLogin, error) {
 			CreateAt: userExist.CreateAt,
 			UpdateAt: userExist.UpdateAt,
 		},
-		AccessToken:  response.Token{Token: accessToken, Expires: int64(accessTokenExp)},
-		RefreshToken: response.Token{Token: refreshToken, Expires: int64(refreshTokenExp)},
+		Tokens: utils.Tokens{
+			AccessToken:  utils.JwtToken{Token: tokens.AccessToken.Token, Expires: tokens.AccessToken.Expires},
+			RefreshToken: utils.JwtToken{Token: tokens.RefreshToken.Token, Expires: tokens.RefreshToken.Expires},
+		},
 	}
 
 	return res, err
+}
+
+func CurrentUser(userId int64) (response.User, error) {
+	res := new(response.User)
+
+	query := fmt.Sprintf(`SELECT id, email, nickname, logo, create_at, update_at FROM %s WHERE id = $1`, database.UsersTable)
+	err := database.Connect.Get(res, query, userId)
+
+	return *res, err
 }

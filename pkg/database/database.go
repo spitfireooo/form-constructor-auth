@@ -17,7 +17,8 @@ type DBConfig struct {
 }
 
 const (
-	UsersTable = "users"
+	UsersTable  = "users"
+	TokensTable = "tokens"
 )
 
 var Connect *sqlx.DB
