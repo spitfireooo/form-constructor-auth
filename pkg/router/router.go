@@ -14,8 +14,8 @@ func Router(r *fiber.App) {
 		auth.Get("/current", controller.CurrentUser)
 		auth.Get("/refresh", controller.RefreshToken)
 		auth.Get("/logout", controller.Logout)
-		auth.Get("/test", middlewares.AuthMiddleware, func(ctx *fiber.Ctx) error {
-			return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		auth.Get("/:id", middlewares.AuthMiddleware, middlewares.IsAuthorMiddleware, func(ctx *fiber.Ctx) error {
+			return ctx.JSON(fiber.Map{
 				"message": "OK",
 			})
 		})
