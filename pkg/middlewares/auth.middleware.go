@@ -4,39 +4,35 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/spitfireooo/form-constructor-auth/pkg/utils"
 	"log"
+	"net/http"
 	"strconv"
+	"strings"
 )
 
 func AuthMiddleware(ctx *fiber.Ctx) error {
-	tokenString := ctx.Cookies("access_token")
+	var accessToken string
 
-	if tokenString == "" {
-		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": "Missing access token",
+	authorization := ctx.Get("Authorization")
+	if strings.HasPrefix(authorization, "Bearer ") {
+		accessToken = strings.TrimPrefix(authorization, "Bearer ")
+	} else if ctx.Cookies("access_token") != "" {
+		accessToken = ctx.Cookies("access_token")
+	}
+
+	if accessToken == "" {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{
+			"message": "Missing authorization token",
 		})
 	}
 
-	if _, err := utils.ValidateToken(tokenString); err != nil {
-		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+	claims, err := utils.ValidateToken(strings.Replace(accessToken, "Bearer ", "", 1))
+	if err != nil {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Invalid token",
 		})
 	}
 
-	//token := ctx.Get("Authorization")
-	//if token == "" {
-	//	return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{
-	//		"message": "Missing authorization token",
-	//	})
-	//}
-	//
-	//claims, err := utils.ValidateToken(strings.Replace(token, "Bearer ", "", 1))
-	//if err != nil {
-	//	return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{
-	//		"message": "Invalid token",
-	//	})
-	//}
-	//
-	//ctx.Locals("user_id", claims["user_id"])
+	ctx.Locals("user_id", int64(claims["user_id"].(float64)))
 
 	return ctx.Next()
 }
@@ -51,16 +47,7 @@ func IsAuthorMiddleware(ctx *fiber.Ctx) error {
 		})
 	}
 
-	tokenString := ctx.Cookies("access_token")
-	token, err := utils.ValidateToken(tokenString)
-	if err != nil {
-		log.Println("Invalid refresh token", err)
-		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": "Invalid refresh token",
-		})
-	}
-
-	userId := int64(token["user_id"].(float64))
+	userId := ctx.Locals("user_id").(int64)
 
 	if id != userId {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{

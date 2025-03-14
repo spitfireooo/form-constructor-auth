@@ -11,7 +11,7 @@ func Router(r *fiber.App) {
 	{
 		auth.Post("/sign-up", controller.SignUp)
 		auth.Post("/sign-in", controller.SignIn)
-		auth.Get("/current", controller.CurrentUser)
+		auth.Get("/current", middlewares.AuthMiddleware, controller.CurrentUser)
 		auth.Get("/refresh", controller.RefreshToken)
 		auth.Get("/logout", controller.Logout)
 		auth.Get("/:id", middlewares.AuthMiddleware, middlewares.IsAuthorMiddleware, func(ctx *fiber.Ctx) error {

@@ -112,23 +112,7 @@ func SignIn(ctx *fiber.Ctx) error {
 }
 
 func CurrentUser(ctx *fiber.Ctx) error {
-	refreshToken := ctx.Cookies("access_token")
-	if refreshToken == "" {
-		log.Println("Missing access token")
-		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": "Missing access token",
-		})
-	}
-
-	token, err := utils.ValidateToken(refreshToken)
-	if err != nil {
-		log.Println("Invalid refresh token", err)
-		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": "Invalid refresh token",
-		})
-	}
-
-	userId := int64(token["user_id"].(float64))
+	userId := ctx.Locals("user_id").(int64)
 
 	if user, err := service.CurrentUser(userId); err != nil {
 		log.Println("Error in CurrentUser service", err)
