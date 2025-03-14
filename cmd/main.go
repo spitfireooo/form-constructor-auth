@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gofiber/contrib/swagger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -46,14 +47,15 @@ func main() {
 
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:8040",
+		//AllowOrigins: "http://localhost:8040",
+		AllowOrigins: "*",
 		AllowMethods: "Origin, Content-Type, Accept",
 	}))
-	//app.Use(swagger.New(swagger.Config{
-	//	BasePath: "/auth",
-	//	FilePath: "./docs/swagger.json",
-	//	Path:     "docs",
-	//}))
+	app.Use(swagger.New(swagger.Config{
+		BasePath: "/auth",
+		FilePath: "./docs/swagger.json",
+		Path:     "docs",
+	}))
 
 	router.Router(app)
 

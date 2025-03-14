@@ -13,6 +13,14 @@ import (
 	"time"
 )
 
+// @Summary	SignUp
+// @Tags auth
+// @Description sign un
+// @ID sign-up
+// @Accept json
+// @Produce	json
+// @Param input	body request.User true "body info"
+// @Router /auth/sign-up [post]
 func SignUp(ctx *fiber.Ctx) error {
 	body := new(request.User)
 
@@ -66,6 +74,14 @@ func SignUp(ctx *fiber.Ctx) error {
 	}
 }
 
+// @Summary	SignIn
+// @Tags auth
+// @Description sign in
+// @ID sign-in
+// @Accept json
+// @Produce	json
+// @Param input	body request.UserLogin true "body info"
+// @Router /auth/sign-in [post]
 func SignIn(ctx *fiber.Ctx) error {
 	body := new(request.UserLogin)
 
@@ -111,6 +127,13 @@ func SignIn(ctx *fiber.Ctx) error {
 	}
 }
 
+// @Summary	CurrentUser
+// @Tags auth
+// @Description current user
+// @ID current-user
+// @Accept json
+// @Produce	json
+// @Router /auth/current [get]
 func CurrentUser(ctx *fiber.Ctx) error {
 	userId := ctx.Locals("user_id").(int64)
 
@@ -126,6 +149,13 @@ func CurrentUser(ctx *fiber.Ctx) error {
 	}
 }
 
+// @Summary	RefreshToken
+// @Tags auth
+// @Description refresh token
+// @ID refresh-token
+// @Accept json
+// @Produce	json
+// @Router /auth/refresh [get]
 func RefreshToken(ctx *fiber.Ctx) error {
 	refreshToken := ctx.Cookies("refresh_token")
 	if refreshToken == "" {
@@ -181,6 +211,13 @@ func RefreshToken(ctx *fiber.Ctx) error {
 	})
 }
 
+// @Summary	Logout
+// @Tags auth
+// @Description logout
+// @ID logout
+// @Accept json
+// @Produce	json
+// @Router /auth/logout [get]
 func Logout(ctx *fiber.Ctx) error {
 	refreshToken := ctx.Cookies("refresh_token")
 	if refreshToken == "" {
