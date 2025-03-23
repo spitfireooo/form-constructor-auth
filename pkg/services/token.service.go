@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"github.com/spitfireooo/form-constructor-auth/pkg/database"
 	"github.com/spitfireooo/form-constructor-auth/pkg/model/entity"
 )
 

@@ -20,6 +20,7 @@ import (
 // @Accept json
 // @Produce	json
 // @Param input	body request.User true "body info"
+// @Success 200 {object} response.User
 // @Router /auth/sign-up [post]
 func SignUp(ctx *fiber.Ctx) error {
 	body := new(request.User)
@@ -81,6 +82,7 @@ func SignUp(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce	json
 // @Param input	body request.UserLogin true "body info"
+// @Success 200 {object} response.UserLogin
 // @Router /auth/sign-in [post]
 func SignIn(ctx *fiber.Ctx) error {
 	body := new(request.UserLogin)
@@ -133,6 +135,7 @@ func SignIn(ctx *fiber.Ctx) error {
 // @ID current-user
 // @Accept json
 // @Produce	json
+// @Success 200 {object} response.User
 // @Router /auth/current [get]
 func CurrentUser(ctx *fiber.Ctx) error {
 	userId := ctx.Locals("user_id").(int64)
@@ -155,6 +158,7 @@ func CurrentUser(ctx *fiber.Ctx) error {
 // @ID refresh-token
 // @Accept json
 // @Produce	json
+// @Success 200 {object} response.UserLogin
 // @Router /auth/refresh [get]
 func RefreshToken(ctx *fiber.Ctx) error {
 	refreshToken := ctx.Cookies("refresh_token")
@@ -217,6 +221,7 @@ func RefreshToken(ctx *fiber.Ctx) error {
 // @ID logout
 // @Accept json
 // @Produce	json
+// @Success 200 {string} string
 // @Router /auth/logout [get]
 func Logout(ctx *fiber.Ctx) error {
 	refreshToken := ctx.Cookies("refresh_token")

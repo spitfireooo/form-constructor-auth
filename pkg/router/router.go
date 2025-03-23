@@ -2,8 +2,10 @@ package router
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/spitfireooo/form-constructor-auth/pkg/controllers"
 	"github.com/spitfireooo/form-constructor-auth/pkg/middlewares"
+	"time"
 )
 
 func Router(r *fiber.App) {
@@ -19,5 +21,13 @@ func Router(r *fiber.App) {
 				"message": "OK",
 			})
 		})
+	}
+
+	utils := r.Group("/utils")
+	{
+		utils.Get("/metrics", monitor.New(monitor.Config{
+			Title:   "Metrics Of Auth Service For Form Constructor",
+			Refresh: time.Second,
+		}))
 	}
 }

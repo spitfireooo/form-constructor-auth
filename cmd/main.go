@@ -7,15 +7,15 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
-	"github.com/spitfireooo/form-constructor-auth/pkg/config"
-	"github.com/spitfireooo/form-constructor-auth/pkg/database"
+	"github.com/spitfireooo/form-constructor-auth/internal/config"
+	"github.com/spitfireooo/form-constructor-auth/internal/database"
 	"github.com/spitfireooo/form-constructor-auth/pkg/router"
 	"log"
 	"os"
 )
 
 func init() {
-	if err := godotenv.Load("configs/.env"); err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		log.Fatal("Error in load env file", err)
 	}
 
@@ -23,7 +23,7 @@ func init() {
 		port += "8020"
 		log.Fatal("Error in configuration init", err)
 	} else {
-		port += viper.GetString("http.port")
+		port += viper.GetString("http.auth_port")
 	}
 
 	if err := database.DatabaseInit(database.DBConfig{

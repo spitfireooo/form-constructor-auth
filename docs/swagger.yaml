@@ -28,6 +28,42 @@ definitions:
     - email
     - password
     type: object
+  response.User:
+    properties:
+      create_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      logo:
+        type: string
+      nickname:
+        type: string
+      update_at:
+        type: string
+    type: object
+  response.UserLogin:
+    properties:
+      tokens:
+        $ref: '#/definitions/utils.Tokens'
+      user:
+        $ref: '#/definitions/response.User'
+    type: object
+  utils.JwtToken:
+    properties:
+      expires:
+        type: integer
+      token:
+        type: string
+    type: object
+  utils.Tokens:
+    properties:
+      accessToken:
+        $ref: '#/definitions/utils.JwtToken'
+      refreshToken:
+        $ref: '#/definitions/utils.JwtToken'
+    type: object
 info:
   contact: {}
 paths:
@@ -39,7 +75,11 @@ paths:
       operationId: current-user
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.User'
       summary: CurrentUser
       tags:
       - auth
@@ -51,7 +91,11 @@ paths:
       operationId: logout
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
       summary: Logout
       tags:
       - auth
@@ -63,7 +107,11 @@ paths:
       operationId: refresh-token
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserLogin'
       summary: RefreshToken
       tags:
       - auth
@@ -82,7 +130,11 @@ paths:
           $ref: '#/definitions/request.UserLogin'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserLogin'
       summary: SignIn
       tags:
       - auth
@@ -101,7 +153,11 @@ paths:
           $ref: '#/definitions/request.User'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.User'
       summary: SignUp
       tags:
       - auth

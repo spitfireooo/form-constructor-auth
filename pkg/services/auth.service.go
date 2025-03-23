@@ -3,11 +3,11 @@ package service
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"github.com/spitfireooo/form-constructor-auth/pkg/database"
 	"github.com/spitfireooo/form-constructor-auth/pkg/model/entity"
 	"github.com/spitfireooo/form-constructor-auth/pkg/model/request"
 	"github.com/spitfireooo/form-constructor-auth/pkg/model/response"
 	"github.com/spitfireooo/form-constructor-auth/pkg/utils"
+	"github.com/spitfireooo/form-constructor-server-v2/internal/database"
 	"log"
 )
 
@@ -20,14 +20,14 @@ func SignUp(user *request.User) (response.User, error) {
 	res := new(response.User)
 
 	query := fmt.Sprintf(`
-		INSERT INTO %s (email, nickname, password, logo) 
+		INSERT INTO %s (email, password, logo) 
 		VALUES ($1, $2, $3) 
-		RETURNING id, email, nickname, logo, create_at, update_at
+		RETURNING id, email, phone, address, nickname, logo, created_at, updated_at
 		`, database.UsersTable,
 	)
 	err = database.Connect.
-		QueryRowx(query, user.Email, user.Nickname, passwordHash, user.Logo).
-		Scan(&res.ID, &res.Email, &res.Nickname, &res.Logo, &res.CreateAt, &res.UpdateAt)
+		QueryRowx(query, user.Email, passwordHash, user.Logo).
+		Scan(&res.ID, &res.Email, &res.Phone, &res.Address, &res.Nickname, &res.Logo, &res.CreatedAt, &res.UpdatedAt)
 
 	return *res, err
 }
@@ -65,11 +65,13 @@ func SignIn(user *request.UserLogin) (response.UserLogin, error) {
 
 	res := response.UserLogin{
 		User: response.User{
-			ID:       userExist.ID,
-			Email:    userExist.Email,
-			Nickname: userExist.Nickname,
-			CreateAt: userExist.CreateAt,
-			UpdateAt: userExist.UpdateAt,
+			ID:        userExist.ID,
+			Email:     userExist.Email,
+			Phone:     userExist.Phone,
+			Address:   userExist.Address,
+			Nickname:  userExist.Nickname,
+			CreatedAt: userExist.CreatedAt,
+			UpdatedAt: userExist.UpdatedAt,
 		},
 		Tokens: utils.Tokens{
 			AccessToken:  utils.JwtToken{Token: tokens.AccessToken.Token, Expires: tokens.AccessToken.Expires},

@@ -29,7 +29,14 @@ const docTemplate = `{
                 ],
                 "summary": "CurrentUser",
                 "operationId": "current-user",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.User"
+                        }
+                    }
+                }
             }
         },
         "/auth/logout": {
@@ -46,7 +53,14 @@ const docTemplate = `{
                 ],
                 "summary": "Logout",
                 "operationId": "logout",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/auth/refresh": {
@@ -63,7 +77,14 @@ const docTemplate = `{
                 ],
                 "summary": "RefreshToken",
                 "operationId": "refresh-token",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserLogin"
+                        }
+                    }
+                }
             }
         },
         "/auth/sign-in": {
@@ -91,7 +112,14 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserLogin"
+                        }
+                    }
+                }
             }
         },
         "/auth/sign-up": {
@@ -119,7 +147,14 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.User"
+                        }
+                    }
+                }
             }
         }
     },
@@ -162,6 +197,62 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "minLength": 6
+                }
+            }
+        },
+        "response.User": {
+            "type": "object",
+            "properties": {
+                "create_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "update_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.UserLogin": {
+            "type": "object",
+            "properties": {
+                "tokens": {
+                    "$ref": "#/definitions/utils.Tokens"
+                },
+                "user": {
+                    "$ref": "#/definitions/response.User"
+                }
+            }
+        },
+        "utils.JwtToken": {
+            "type": "object",
+            "properties": {
+                "expires": {
+                    "type": "integer"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "utils.Tokens": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "$ref": "#/definitions/utils.JwtToken"
+                },
+                "refreshToken": {
+                    "$ref": "#/definitions/utils.JwtToken"
                 }
             }
         }
