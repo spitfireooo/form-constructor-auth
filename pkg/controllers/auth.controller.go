@@ -100,7 +100,7 @@ func SignUp(ctx *fiber.Ctx) error {
 			})
 		} else {
 			type Filename struct {
-				filename string
+				Filename string `json:"filename"`
 			}
 			var filename Filename
 			err = json.Unmarshal(resReq, &filename)
@@ -111,33 +111,9 @@ func SignUp(ctx *fiber.Ctx) error {
 				})
 			}
 
-			body.Logo = &filename.filename
+			body.Logo = &filename.Filename
 		}
 	}
-
-	//if file, err := ctx.FormFile("logo"); err != nil {
-	//	log.Println("Error in file upload", err)
-	//} else if file.Size > 0 {
-	//	if err = psw.CheckContentType(
-	//		file,
-	//		"image/jpg",
-	//		"image/png",
-	//		"image/gif",
-	//		"image/jpeg",
-	//	); err != nil {
-	//		log.Println("Bad ext of file", err)
-	//		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
-	//			"message": "Bad ext of file",
-	//		})
-	//	}
-	//
-	//	filename := fmt.Sprintf("./static/uploads/%s_%s", uuid.New(), file.Filename)
-	//	if err = ctx.SaveFile(file, filename); err != nil {
-	//		log.Println("Error in save file", err)
-	//	}
-	//
-	//	body.Logo = filename
-	//}
 
 	if res, err := service.SignUp(body); err != nil {
 		log.Println("Error in SignUp service", err)

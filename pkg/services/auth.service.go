@@ -20,12 +20,12 @@ func SignUp(user *request.User) (response.User, error) {
 	res := new(response.User)
 
 	query := fmt.Sprintf(`
-		INSERT INTO %s (email, password) VALUES ($1, $2) 
+		INSERT INTO %s (email, password, logo) VALUES ($1, $2, $3) 
 		RETURNING id, email, phone, address, nickname, logo, created_at, updated_at
 		`, database.UsersTable,
 	)
 	err = database.Connect.
-		QueryRowx(query, user.Email, passwordHash).
+		QueryRowx(query, user.Email, passwordHash, user.Logo).
 		Scan(&res.ID, &res.Email, &res.Phone, &res.Address, &res.Nickname, &res.Logo, &res.CreatedAt, &res.UpdatedAt)
 
 	return *res, err
