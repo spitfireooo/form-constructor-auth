@@ -69,6 +69,7 @@ func SignIn(user *request.UserLogin) (response.UserLogin, error) {
 			Phone:     userExist.Phone,
 			Address:   userExist.Address,
 			Nickname:  userExist.Nickname,
+			Logo:      userExist.Logo,
 			CreatedAt: userExist.CreatedAt,
 			UpdatedAt: userExist.UpdatedAt,
 		},
@@ -84,7 +85,7 @@ func SignIn(user *request.UserLogin) (response.UserLogin, error) {
 func CurrentUser(userId int64) (response.User, error) {
 	res := new(response.User)
 
-	query := fmt.Sprintf(`SELECT id, email, nickname, logo, create_at, update_at FROM %s WHERE id = $1`, database.UsersTable)
+	query := fmt.Sprintf(`SELECT id, email, nickname, logo, created_at, updated_at FROM %s WHERE id = $1`, database.UsersTable)
 	err := database.Connect.Get(res, query, userId)
 
 	return *res, err

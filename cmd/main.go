@@ -44,8 +44,6 @@ var PORT string
 func main() {
 	app := fiber.New()
 
-	app.Static("/static", "./static")
-
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
 		//AllowOrigins: "http://localhost:8040",

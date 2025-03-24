@@ -1,12 +1,20 @@
 package controller
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/spf13/viper"
 	"github.com/spitfireooo/form-constructor-auth/pkg/model/request"
 	"github.com/spitfireooo/form-constructor-auth/pkg/services"
 	"github.com/spitfireooo/form-constructor-auth/pkg/utils"
+	"io"
 	"log"
+	"mime/multipart"
+	"net/http"
+	"path/filepath"
 	"time"
 )
 
@@ -16,7 +24,7 @@ import (
 // @ID sign-up
 // @Accept json
 // @Produce	json
-// @Param input	body request.User true "body info"
+// @Param input	body request.UserLogin true "body info"
 // @Success 200 {object} response.User
 // @Router /auth/sign-up [post]
 func SignUp(ctx *fiber.Ctx) error {
@@ -34,6 +42,77 @@ func SignUp(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Validation errors",
 		})
+	}
+
+	if file, err := ctx.FormFile("logo"); err != nil {
+		log.Println("File not found", err)
+	} else {
+		f, err := file.Open()
+		if err != nil {
+			return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Error in file opening",
+			})
+		}
+		defer f.Close()
+
+		bodyReq := &bytes.Buffer{}
+		writer := multipart.NewWriter(bodyReq)
+
+		part, err := writer.CreateFormFile("logo", filepath.Base(file.Filename))
+		if err != nil {
+		}
+
+		_, err = io.Copy(part, f)
+		if err != nil {
+		}
+
+		err = writer.Close()
+		if err != nil {
+		}
+
+		url := fmt.Sprintf(
+			"%s:%s/api/v1/user/upload",
+			viper.GetString("http.addr"),
+			viper.GetString("http.port"),
+		)
+		req, err := http.NewRequest(fiber.MethodPost, url, bodyReq)
+		if err != nil {
+			return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Error in creating request",
+			})
+		}
+
+		req.Header.Set("Content-Type", writer.FormDataContentType())
+
+		client := &http.Client{}
+		res, err := client.Do(req)
+		if err != nil {
+			return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Error in response sending",
+			})
+		}
+		defer res.Body.Close()
+
+		if resReq, err := io.ReadAll(res.Body); err != nil {
+			log.Println("Bad request", err)
+			return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Bad request",
+			})
+		} else {
+			type Filename struct {
+				filename string
+			}
+			var filename Filename
+			err = json.Unmarshal(resReq, &filename)
+			if err != nil {
+				log.Println("Error in unmarshal json", err)
+				return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"message": "Error in unmarshal json",
+				})
+			}
+
+			body.Logo = &filename.filename
+		}
 	}
 
 	//if file, err := ctx.FormFile("logo"); err != nil {

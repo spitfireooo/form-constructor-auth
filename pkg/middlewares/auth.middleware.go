@@ -45,9 +45,9 @@ func IsAuthor(ctx *fiber.Ctx) error {
 		})
 	}
 
-	userId := ctx.Locals("user_id").(int)
+	userId := ctx.Locals("user_id").(int64)
 
-	if id != userId {
+	if int64(id) != userId {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "You dont have permission",
 		})
