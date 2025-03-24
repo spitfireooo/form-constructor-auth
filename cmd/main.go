@@ -1,14 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gofiber/contrib/swagger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
-	"github.com/spitfireooo/form-constructor-auth/internal/config"
-	"github.com/spitfireooo/form-constructor-auth/internal/database"
+	"github.com/spitfireooo/form-constructor-auth/pkg/config"
 	"github.com/spitfireooo/form-constructor-auth/pkg/router"
 	"log"
 	"os"
@@ -20,10 +20,10 @@ func init() {
 	}
 
 	if err := config.ConfigInit(); err != nil {
-		port += "8020"
+		PORT = ":8060"
 		log.Fatal("Error in configuration init", err)
 	} else {
-		port += viper.GetString("http.auth_port")
+		PORT = fmt.Sprintf(":%v", viper.GetString("http.auth_port"))
 	}
 
 	if err := database.DatabaseInit(database.DBConfig{
@@ -38,7 +38,7 @@ func init() {
 	}
 }
 
-var port = ":"
+var PORT string
 
 func main() {
 	app := fiber.New()
