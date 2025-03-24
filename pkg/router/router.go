@@ -13,10 +13,10 @@ func Router(r *fiber.App) {
 	{
 		auth.Post("/sign-up", controller.SignUp)
 		auth.Post("/sign-in", controller.SignIn)
-		auth.Get("/current", middlewares.IsAuthorized, controller.CurrentUser)
+		auth.Get("/current", middleware.IsAuthorized, controller.CurrentUser)
 		auth.Get("/refresh", controller.RefreshToken)
 		auth.Get("/logout", controller.Logout)
-		auth.Get("/:id", middlewares.IsAuthorized, middlewares.IsAuthor, func(ctx *fiber.Ctx) error {
+		auth.Get("/:id", middleware.IsAuthorized, middleware.IsAuthor, func(ctx *fiber.Ctx) error {
 			return ctx.JSON(fiber.Map{
 				"message": "OK",
 			})

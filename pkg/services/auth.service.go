@@ -20,8 +20,7 @@ func SignUp(user *request.User) (response.User, error) {
 	res := new(response.User)
 
 	query := fmt.Sprintf(`
-		INSERT INTO %s (email, password) 
-		VALUES ($1, $2) 
+		INSERT INTO %s (email, password) VALUES ($1, $2) 
 		RETURNING id, email, phone, address, nickname, logo, created_at, updated_at
 		`, database.UsersTable,
 	)
