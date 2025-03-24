@@ -5,11 +5,10 @@ import (
 	"github.com/spitfireooo/form-constructor-auth/pkg/utils"
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
-func AuthMiddleware(ctx *fiber.Ctx) error {
+func IsAuthorized(ctx *fiber.Ctx) error {
 	var accessToken string
 
 	authorization := ctx.Get("Authorization")
@@ -37,9 +36,8 @@ func AuthMiddleware(ctx *fiber.Ctx) error {
 	return ctx.Next()
 }
 
-func IsAuthorMiddleware(ctx *fiber.Ctx) error {
-	idStr := ctx.Params("id")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+func IsAuthor(ctx *fiber.Ctx) error {
+	id, err := ctx.ParamsInt("id")
 	if err != nil {
 		log.Println("Bad params!", err)
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -47,7 +45,7 @@ func IsAuthorMiddleware(ctx *fiber.Ctx) error {
 		})
 	}
 
-	userId := ctx.Locals("user_id").(int64)
+	userId := ctx.Locals("user_id").(int)
 
 	if id != userId {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -57,3 +55,37 @@ func IsAuthorMiddleware(ctx *fiber.Ctx) error {
 
 	return ctx.Next()
 }
+
+//func IsAdmin(ctx *fiber.Ctx) error {
+//	userId := ctx.Locals("user_id").(int)
+//	if user, err := service.GetOneUser(userId); err != nil {
+//		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+//			"message": "You dont have permission",
+//		})
+//	} else {
+//		if user.Permission == "ADMIN" {
+//			return ctx.Next()
+//		}
+//
+//		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+//			"message": "You dont have permission",
+//		})
+//	}
+//}
+
+//func HasPermission(ctx *fiber.Ctx, mod string) error {
+//	userId := ctx.Locals("user_id").(int)
+//	if user, err := service.GetOneUser(userId); err != nil {
+//		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+//			"message": "You dont have permission",
+//		})
+//	} else {
+//		if user.Permission == mod {
+//			return ctx.Next()
+//		}
+//
+//		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+//			"message": "You dont have permission",
+//		})
+//	}
+//}

@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"github.com/spitfireooo/form-constructor-auth/pkg/model/entity"
+	"github.com/spitfireooo/form-constructor-server-v2/pkg/database"
 )
 
 func CreateToken(userId int64, token string) (entity.Token, error) {

@@ -7,7 +7,7 @@ import (
 	"github.com/spitfireooo/form-constructor-auth/pkg/model/request"
 	"github.com/spitfireooo/form-constructor-auth/pkg/model/response"
 	"github.com/spitfireooo/form-constructor-auth/pkg/utils"
-	"github.com/spitfireooo/form-constructor-server-v2/internal/database"
+	"github.com/spitfireooo/form-constructor-server-v2/pkg/database"
 	"log"
 )
 
@@ -20,13 +20,13 @@ func SignUp(user *request.User) (response.User, error) {
 	res := new(response.User)
 
 	query := fmt.Sprintf(`
-		INSERT INTO %s (email, password, logo) 
-		VALUES ($1, $2, $3) 
+		INSERT INTO %s (email, password) 
+		VALUES ($1, $2) 
 		RETURNING id, email, phone, address, nickname, logo, created_at, updated_at
 		`, database.UsersTable,
 	)
 	err = database.Connect.
-		QueryRowx(query, user.Email, passwordHash, user.Logo).
+		QueryRowx(query, user.Email, passwordHash).
 		Scan(&res.ID, &res.Email, &res.Phone, &res.Address, &res.Nickname, &res.Logo, &res.CreatedAt, &res.UpdatedAt)
 
 	return *res, err

@@ -8,8 +8,9 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
-	"github.com/spitfireooo/form-constructor-auth/pkg/config"
 	"github.com/spitfireooo/form-constructor-auth/pkg/router"
+	"github.com/spitfireooo/form-constructor-server-v2/pkg/config"
+	"github.com/spitfireooo/form-constructor-server-v2/pkg/database"
 	"log"
 	"os"
 )
@@ -26,7 +27,7 @@ func init() {
 		PORT = fmt.Sprintf(":%v", viper.GetString("http.auth_port"))
 	}
 
-	if err := database.DatabaseInit(database.DBConfig{
+	if err := database.DatabaseInit(database.ConnectConfig{
 		Username: viper.GetString("db.username"),
 		Password: os.Getenv("DB_PASSWORD"),
 		Database: viper.GetString("db.database"),
@@ -59,7 +60,7 @@ func main() {
 
 	router.Router(app)
 
-	if err := app.Listen(port); err != nil {
+	if err := app.Listen(PORT); err != nil {
 		log.Fatal("Error in server started", err)
 		return
 	}
