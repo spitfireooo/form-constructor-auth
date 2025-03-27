@@ -9,7 +9,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.1
 	github.com/joho/godotenv v1.5.1
 	github.com/spf13/viper v1.20.0
-	github.com/spitfireooo/form-constructor-server-v2 v0.0.0-20250323104729-241efd61ac8c
+	github.com/spitfireooo/form-constructor-server-v2 v0.0.0-20250327052640-f3c13a2221a5
 	github.com/swaggo/swag v1.16.4
 	golang.org/x/crypto v0.36.0
 )

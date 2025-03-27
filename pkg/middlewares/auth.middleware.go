@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/spitfireooo/form-constructor-auth/pkg/utils"
+	"github.com/spitfireooo/form-constructor-server-v2/pkg/service"
 	"log"
 	"net/http"
 	"strings"
@@ -18,9 +18,6 @@ func IsAuthorized(ctx *fiber.Ctx) error {
 	} else if ctx.Cookies("access_token") != "" {
 		accessToken = ctx.Cookies("access_token")
 	}
-
-	fmt.Println(ctx.Cookies("access_token"))
-	fmt.Println(ctx.Get("Authorization"))
 
 	if accessToken == "" {
 		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{
@@ -60,22 +57,25 @@ func IsAuthor(ctx *fiber.Ctx) error {
 	return ctx.Next()
 }
 
-//func IsAdmin(ctx *fiber.Ctx) error {
-//	userId := ctx.Locals("user_id").(int)
-//	if user, err := service.GetOneUser(userId); err != nil {
-//		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-//			"message": "You dont have permission",
-//		})
-//	} else {
-//		if user.Permission == "ADMIN" {
-//			return ctx.Next()
-//		}
-//
-//		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-//			"message": "You dont have permission",
-//		})
-//	}
-//}
+func IsAdmin(ctx *fiber.Ctx) error {
+	userId := ctx.Locals("user_id").(int)
+	if permissions, err := service.GetUserPermissions(userId); err != nil {
+		log.Println("Error in Get User Permissions", err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Permission not found",
+		})
+	} else {
+		for _, permission := range permissions {
+			if strings.ToLower(permission.Permission) == "admin" {
+				return ctx.Next()
+			}
+		}
+	}
+
+	return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+		"message": "You dont have permission",
+	})
+}
 
 //func HasPermission(ctx *fiber.Ctx, mod string) error {
 //	userId := ctx.Locals("user_id").(int)
