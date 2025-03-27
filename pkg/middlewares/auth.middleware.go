@@ -58,7 +58,7 @@ func IsAuthor(ctx *fiber.Ctx) error {
 }
 
 func IsAdmin(ctx *fiber.Ctx) error {
-	userId := ctx.Locals("user_id").(int)
+	userId := int(ctx.Locals("user_id").(float32))
 	if permissions, err := service.GetUserPermissions(userId); err != nil {
 		log.Println("Error in Get User Permissions", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
