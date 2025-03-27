@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/spitfireooo/form-constructor-auth/pkg/utils"
 	"log"
@@ -17,6 +18,9 @@ func IsAuthorized(ctx *fiber.Ctx) error {
 	} else if ctx.Cookies("access_token") != "" {
 		accessToken = ctx.Cookies("access_token")
 	}
+
+	fmt.Println(ctx.Cookies("access_token"))
+	fmt.Println(ctx.Get("Authorization"))
 
 	if accessToken == "" {
 		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{

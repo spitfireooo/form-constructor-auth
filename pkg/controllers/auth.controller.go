@@ -7,9 +7,11 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/spf13/viper"
+	"github.com/spitfireooo/form-constructor-auth/pkg/model/entity"
 	"github.com/spitfireooo/form-constructor-auth/pkg/model/request"
 	"github.com/spitfireooo/form-constructor-auth/pkg/services"
 	"github.com/spitfireooo/form-constructor-auth/pkg/utils"
+	"github.com/spitfireooo/form-constructor-server-v2/pkg/database"
 	"io"
 	"log"
 	"mime/multipart"
@@ -19,7 +21,7 @@ import (
 )
 
 // @Summary	SignUp
-// @Tags auth
+// @Tags Auth
 // @Description sign un
 // @ID sign-up
 // @Accept json
@@ -44,6 +46,15 @@ func SignUp(ctx *fiber.Ctx) error {
 		})
 	}
 
+	userExist := new(entity.User)
+	query := fmt.Sprintf(`SELECT * FROM %s WHERE email=$1`, database.UsersTable)
+	err := database.Connect.Get(userExist, query, body.Email)
+	if err == nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "This email is used now",
+		})
+	}
+
 	if file, err := ctx.FormFile("logo"); err != nil {
 		log.Println("File not found", err)
 	} else {
@@ -60,15 +71,13 @@ func SignUp(ctx *fiber.Ctx) error {
 
 		part, err := writer.CreateFormFile("logo", filepath.Base(file.Filename))
 		if err != nil {
+			return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Error in creating form file for request",
+			})
 		}
 
-		_, err = io.Copy(part, f)
-		if err != nil {
-		}
-
-		err = writer.Close()
-		if err != nil {
-		}
+		io.Copy(part, f)
+		writer.Close()
 
 		url := fmt.Sprintf(
 			"%s:%s/api/v1/user/upload",
@@ -128,7 +137,7 @@ func SignUp(ctx *fiber.Ctx) error {
 }
 
 // @Summary	SignIn
-// @Tags auth
+// @Tags Auth
 // @Description sign in
 // @ID sign-in
 // @Accept json
@@ -182,7 +191,7 @@ func SignIn(ctx *fiber.Ctx) error {
 }
 
 // @Summary	CurrentUser
-// @Tags auth
+// @Tags Auth
 // @Description current user
 // @ID current-user
 // @Accept json
@@ -205,7 +214,7 @@ func CurrentUser(ctx *fiber.Ctx) error {
 }
 
 // @Summary	RefreshToken
-// @Tags auth
+// @Tags Auth
 // @Description refresh token
 // @ID refresh-token
 // @Accept json
@@ -268,7 +277,7 @@ func RefreshToken(ctx *fiber.Ctx) error {
 }
 
 // @Summary	Logout
-// @Tags auth
+// @Tags Auth
 // @Description logout
 // @ID logout
 // @Accept json

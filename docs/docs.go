@@ -25,7 +25,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "CurrentUser",
                 "operationId": "current-user",
@@ -49,7 +49,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "Logout",
                 "operationId": "logout",
@@ -73,7 +73,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "RefreshToken",
                 "operationId": "refresh-token",
@@ -97,7 +97,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "SignIn",
                 "operationId": "sign-in",
@@ -132,7 +132,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "SignUp",
                 "operationId": "sign-up",
@@ -143,7 +143,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.User"
+                            "$ref": "#/definitions/request.UserLogin"
                         }
                     }
                 ],
@@ -159,31 +159,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "request.User": {
-            "type": "object",
-            "required": [
-                "email",
-                "nickname",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "logg": {
-                    "type": "string"
-                },
-                "nickname": {
-                    "type": "string",
-                    "maxLength": 50,
-                    "minLength": 3
-                },
-                "password": {
-                    "type": "string",
-                    "minLength": 6
-                }
-            }
-        },
         "request.UserLogin": {
             "type": "object",
             "required": [
@@ -203,7 +178,10 @@ const docTemplate = `{
         "response.User": {
             "type": "object",
             "properties": {
-                "create_at": {
+                "address": {
+                    "type": "string"
+                },
+                "created_at": {
                     "type": "string"
                 },
                 "email": {
@@ -218,7 +196,10 @@ const docTemplate = `{
                 "nickname": {
                     "type": "string"
                 },
-                "update_at": {
+                "phone": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
