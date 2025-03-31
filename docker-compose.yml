@@ -1,0 +1,12 @@
+services:
+  auth:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: auth
+    ports:
+      - 8020:8020
+    volumes:
+      - ./.env:/app/.env
+    restart: unless-stopped
+    network_mode: host
