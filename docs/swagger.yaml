@@ -1,0 +1,164 @@
+definitions:
+  request.User:
+    properties:
+      email:
+        type: string
+      logg:
+        type: string
+      nickname:
+        maxLength: 50
+        minLength: 3
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - nickname
+    - password
+    type: object
+  request.UserLogin:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  response.User:
+    properties:
+      create_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      logo:
+        type: string
+      nickname:
+        type: string
+      update_at:
+        type: string
+    type: object
+  response.UserLogin:
+    properties:
+      tokens:
+        $ref: '#/definitions/utils.Tokens'
+      user:
+        $ref: '#/definitions/response.User'
+    type: object
+  utils.JwtToken:
+    properties:
+      expires:
+        type: integer
+      token:
+        type: string
+    type: object
+  utils.Tokens:
+    properties:
+      accessToken:
+        $ref: '#/definitions/utils.JwtToken'
+      refreshToken:
+        $ref: '#/definitions/utils.JwtToken'
+    type: object
+info:
+  contact: {}
+paths:
+  /auth/current:
+    get:
+      consumes:
+      - application/json
+      description: current user
+      operationId: current-user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.User'
+      summary: CurrentUser
+      tags:
+      - auth
+  /auth/logout:
+    get:
+      consumes:
+      - application/json
+      description: logout
+      operationId: logout
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Logout
+      tags:
+      - auth
+  /auth/refresh:
+    get:
+      consumes:
+      - application/json
+      description: refresh token
+      operationId: refresh-token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserLogin'
+      summary: RefreshToken
+      tags:
+      - auth
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: sign in
+      operationId: sign-in
+      parameters:
+      - description: body info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserLogin'
+      summary: SignIn
+      tags:
+      - auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: sign un
+      operationId: sign-up
+      parameters:
+      - description: body info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.User'
+      summary: SignUp
+      tags:
+      - auth
+swagger: "2.0"
