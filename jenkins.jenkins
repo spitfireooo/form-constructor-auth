@@ -7,7 +7,8 @@ pipeline {
                     cd /home/force/test/Jenkins;\
                     git fetch origin git@github.com:spitfireooo/form-constructor-auth.git;\
                     git pull origin git@github.com:spitfireooo/form-constructor-auth.git;\
-                    ls -a
+                    ls -a;\
+                    whoami
                     '''
                 }
             }
