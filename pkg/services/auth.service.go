@@ -24,9 +24,20 @@ func SignUp(user *request.User) (response.User, error) {
 		RETURNING id, email, phone, address, nickname, logo, created_at, updated_at
 		`, database.UsersTable,
 	)
-	err = database.Connect.
+	if err = database.Connect.
 		QueryRowx(query, user.Email, passwordHash, user.Logo).
-		Scan(&res.ID, &res.Email, &res.Phone, &res.Address, &res.Nickname, &res.Logo, &res.CreatedAt, &res.UpdatedAt)
+		Scan(&res.ID, &res.Email, &res.Phone, &res.Address, &res.Nickname, &res.Logo, &res.CreatedAt, &res.UpdatedAt);
+		err != nil {
+		return response.User{}, err
+	}
+	
+	query = fmt.Sprintf(
+		`INSERT INTO %s (user_id, permission) VALUES ($1, $2)`,
+		database.UserPermissionsTable,
+	)
+	if _, err = database.Connect.Exec(query, res.ID, "user"); err != nil {
+		return response.User{}, err
+	}
 
 	return *res, err
 }

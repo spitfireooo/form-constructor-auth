@@ -47,7 +47,7 @@ func SignUp(ctx *fiber.Ctx) error {
 	}
 
 	userExist := new(entity.User)
-	query := fmt.Sprintf(`SELECT * FROM %s WHERE email=$1`, database.UsersTable)
+	query := fmt.Sprintf(`SELECT * FROM %s WHERE email = $1`, database.UsersTable)
 	err := database.Connect.Get(userExist, query, body.Email)
 	if err == nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
