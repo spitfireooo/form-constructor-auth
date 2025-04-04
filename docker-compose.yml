@@ -9,4 +9,8 @@ services:
     volumes:
       - ./.env:/app/.env
     restart: unless-stopped
+<<<<<<< HEAD
     network_mode: host
+=======
+    network_mode: host
+>>>>>>> 63695fd2cb30dd6139c6f401bb3b78c6275a1b38
