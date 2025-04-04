@@ -4,9 +4,7 @@ pipeline {
         stage('Upload changes') {
             steps {
                     sh '''
-                    cd /home/force/test/Jenkins/back/auth;\
-                    git fetch origin git@github.com:spitfireooo/form-constructor-auth.git;\
-                    git pull origin git@github.com:spitfireooo/form-constructor-auth.git;\
+                    cd /home/force/test/Jenkins/workspace/back-auth;\
                     ls -a;\
                     whoami
                     '''
