@@ -29,7 +29,7 @@ func init() {
 
 	if err := database.DatabaseInit(database.ConnectConfig{
 		Username: viper.GetString("db.username"),
-		Password: os.Getenv("DB_PASSWORD"),
+		Password: os.Getenv("DB_PASSWORD_LOCAL"),
 		Database: viper.GetString("db.database"),
 		Host:     viper.GetString("db.host"),
 		Port:     viper.GetString("db.port"),

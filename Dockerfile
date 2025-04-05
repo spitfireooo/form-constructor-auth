@@ -1,4 +1,4 @@
-FROM golang:1.23-alpine
+FROM golang:1.23-alpine as builder
 
 WORKDIR /app
 
@@ -7,8 +7,11 @@ RUN go mod download
 
 COPY . /app
 
-RUN go build -o auth ./cmd/main.go
+RUN go build -o /main ./cmd/main.go
+
+FROM alpine:3
+COPY --from=builder main /bin/main
 
 EXPOSE 8020
 
-CMD ["./auth"]
+ENTRYPOINT ["/bin/main"]
