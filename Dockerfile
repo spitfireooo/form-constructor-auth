@@ -5,11 +5,12 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY . /app
+COPY . .
 
-RUN go build -o /main ./cmd/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o /main ./cmd/main.go
 
-FROM alpine:3
+FROM scratch
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder main /bin/main
 
 EXPOSE 8020

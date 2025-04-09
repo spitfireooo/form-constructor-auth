@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	"github.com/spitfireooo/form-constructor-auth/pkg/router"
@@ -55,6 +56,7 @@ func main() {
 		FilePath: "./docs/swagger.json",
 		Path:     "docs",
 	}))
+	app.Use(recover.New())
 
 	router.Router(app)
 

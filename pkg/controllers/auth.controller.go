@@ -263,6 +263,7 @@ func RefreshToken(ctx *fiber.Ctx) error {
 		Secure:   true,
 	})
 
+	// delete this
 	ctx.Cookie(&fiber.Cookie{
 		Name:     "refresh_token",
 		Value:    tokens.RefreshToken.Token,
