@@ -4,7 +4,7 @@ pipeline {
         stage('Upload changes') {
             steps {
                     sh '''
-                    cd /home/jenkins/workspace/back-auth ;\
+                    cd /home/jenkins ;\
                     ls -a;\
                     whoami
                     '''
