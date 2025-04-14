@@ -23,7 +23,7 @@ func Router(r *fiber.App) {
 		})
 	}
 
-	utils := r.Group("/utils")
+	utils := r.Group("/utils", middleware.IsAuthorized, middleware.IsAdmin)
 	{
 		utils.Get("/metrics", monitor.New(monitor.Config{
 			Title:   "Metrics Of Auth Service For Form Constructor",
