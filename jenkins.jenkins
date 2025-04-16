@@ -5,8 +5,7 @@ pipeline {
             steps {
                     sh '''
                     cd /home/jenkins ;\
-                    ls -a;\
-                    whoami
+                    ls -a
                     '''
                 }
             }
