@@ -24,7 +24,7 @@ func init() {
 	if err := config.ConfigInit(); err != nil {
 		log.Fatalln("Error in configuration init", err)
 	} else {
-		PORT = viper.GetInt("http.port")
+		PORT = viper.GetInt("http.auth_port")
 	}
 
 	cmd := config.CobraInit(config.CobraConfig{
