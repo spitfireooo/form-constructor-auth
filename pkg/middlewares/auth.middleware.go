@@ -57,6 +57,26 @@ func IsAuthor(ctx *fiber.Ctx) error {
 	return ctx.Next()
 }
 
+//func IsFormAuthor(ctx *fiber.Ctx) error {
+//	id, err := ctx.ParamsInt("id")
+//	if err != nil {
+//		log.Println("Bad params!", err)
+//		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+//			"message": "Bad params",
+//		})
+//	}
+//
+//	userId := ctx.Locals("user_id").(int64)
+//
+//	if int64(id) != userId {
+//		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+//			"message": "You dont have permission",
+//		})
+//	}
+//
+//	return ctx.Next()
+//}
+
 func IsAdmin(ctx *fiber.Ctx) error {
 	userId := ctx.Locals("user_id").(int64)
 	if permissions, err := service.GetUserPermissions(int(userId)); err != nil {

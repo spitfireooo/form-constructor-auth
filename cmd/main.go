@@ -17,30 +17,49 @@ import (
 )
 
 func init() {
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatal("Error in load env file", err)
+	if err := godotenv.Load("./.env"); err != nil {
+		log.Fatalln("Error in loading env file", err)
 	}
 
 	if err := config.ConfigInit(); err != nil {
-		PORT = ":8060"
-		log.Fatal("Error in configuration init", err)
+		log.Fatalln("Error in configuration init", err)
 	} else {
-		PORT = fmt.Sprintf(":%v", viper.GetString("http.auth_port"))
+		PORT = viper.GetInt("http.port")
 	}
 
-	if err := database.DatabaseInit(database.ConnectConfig{
-		Username: viper.GetString("db.username"),
-		Password: os.Getenv("DB_PASSWORD_LOCAL"),
-		Database: viper.GetString("db.database"),
-		Host:     viper.GetString("db.host"),
-		Port:     viper.GetString("db.port"),
-		SSLMode:  viper.GetString("db.ssl_mode"),
-	}); err != nil {
-		log.Fatal("Error in database connection", err)
+	cmd := config.CobraInit(config.CobraConfig{
+		Use:   "form constructor auth",
+		Short: "Server for form constructor auth",
+		Long:  "Server for form constructor auth",
+	})
+	cmd.PersistentFlags().IntVarP(&PORT, "port", "p", 8020, "Port for starting")
+	cmd.PersistentFlags().StringVarP(&DB_CON, "db-con", "d", "uri", "Database mode connection")
+	if err := cmd.Execute(); err != nil {
+		log.Fatalln("Error in cobra init", err)
+	}
+
+	var db_err error
+	if DB_CON == "conf" {
+		db_err = database.DatabaseInit(database.ConnectConfig{
+			Username: viper.GetString("db.username"),
+			Password: os.Getenv("DB_PASSWORD_LOCAL"),
+			Database: viper.GetString("db.database"),
+			Host:     viper.GetString("db.host"),
+			Port:     viper.GetString("db.port"),
+			SSLMode:  viper.GetString("db.ssl_mode"),
+		})
+	} else if DB_CON == "url" || DB_CON == "uri" {
+		db_err = database.DatabaseInitByURL(os.Getenv("DATABASE_URL"))
+	}
+	if db_err != nil {
+		log.Fatal("Error in database connection", db_err)
 	}
 }
 
-var PORT string
+var (
+	PORT   int
+	DB_CON string
+)
 
 func main() {
 	app := fiber.New()
@@ -60,7 +79,7 @@ func main() {
 
 	router.Router(app)
 
-	if err := app.Listen(PORT); err != nil {
+	if err := app.Listen(fmt.Sprintf(":%v", PORT)); err != nil {
 		log.Fatal("Error in server started", err)
 		return
 	}
